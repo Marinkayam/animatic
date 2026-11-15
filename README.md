@@ -54,11 +54,20 @@ Open Claude Code in your app's repo and say one sentence:
 
 That's the whole install. Claude does the rest and comes back with **one** short round of questions.
 
-| | |
-|---|---|
-| <img src="docs/step-1-setup.jpg" alt="Setup is one sentence, typed into Claude Code inside your project" width="440"> | **1. One sentence.** Claude installs the skill for you (nothing is added to your repo) and checks the tools it needs. |
-| <img src="docs/step-2-design-system.jpg" alt="Claude reads colours, type and radius into a brand profile and shows a preview card" width="440"> | **2. It learns your design system.** Claude reads your colour tokens, fonts, radius and content guide on its own, then shows you a preview card and asks: *does this look like you?* |
-| <img src="docs/step-3-open-a-pr.jpg" alt="A Create pull request button, and below it: animatic started by itself" width="440"> | **3. Then you do nothing.** Open a pull request and animatic starts by itself. There is no command to remember. |
+<table>
+  <tr>
+    <td width="56%"><img src="docs/step-1-setup.jpg" alt="Setup is one sentence, typed into Claude Code inside your project"></td>
+    <td><b>1. One sentence.</b> Claude installs the skill for you (nothing is added to your repo) and checks the tools it needs.</td>
+  </tr>
+  <tr>
+    <td width="56%"><img src="docs/step-2-design-system.jpg" alt="Claude reads colours, type and radius into a brand profile and shows a preview card"></td>
+    <td><b>2. It learns your design system.</b> Claude reads your colour tokens, fonts, radius and content guide on its own, then shows you a preview card and asks: <i>does this look like you?</i></td>
+  </tr>
+  <tr>
+    <td width="56%"><img src="docs/step-3-open-a-pr.jpg" alt="A Create pull request button, and below it: animatic started by itself"></td>
+    <td><b>3. Then you do nothing.</b> Open a pull request and animatic starts by itself. There is no command to remember.</td>
+  </tr>
+</table>
 
 You also sign in to GitHub once, in a browser window Claude opens, so the videos can be attached.
 
@@ -69,12 +78,24 @@ Needs macOS (Linux should work too, it's less tested), [Claude Code](https://cla
 
 For every pull request that changes something a user can see:
 
-| | |
-|---|---|
-| <img src="docs/step-4-explains.jpg" alt="Three panels: reads the PR, writes a storyboard, records your real code" width="440"> | **It reads the PR, storyboards it, and records your real code.** Claude finds what changed *for the user* (screens, states, copy, interactions), writes 3–6 scenes, and records each one from the PR's own branch with Playwright. Your checkout is never touched. |
-| <img src="docs/step-5-your-brand.jpg" alt="A title card and caption in a brand's own colours and type" width="440"> | **Cards and captions come out in your brand.** Title card, end card and captions use your colours, your typeface and your tone of voice. |
-| <img src="docs/step-6-on-the-pr.jpg" alt="The video sits at the top of the pull request description" width="440"> | **The video lands at the top of the PR.** Reviewers see the change before they read a line. |
-| <img src="docs/every-pr.jpg" alt="A grid of pull requests, each with a video" width="440"> | **And it keeps going.** Every new PR gets its film. When a PR changes after review, the video is refreshed. PRs with nothing to see (docs, tooling) are skipped. |
+<table>
+  <tr>
+    <td width="56%"><img src="docs/step-4-explains.jpg" alt="Three panels: reads the PR, writes a storyboard, records your real code"></td>
+    <td><b>It reads the PR, storyboards it, and records your real code.</b> Claude finds what changed <i>for the user</i> (screens, states, copy, interactions), writes 3–6 scenes, and records each one from the PR's own branch with Playwright. Your checkout is never touched.</td>
+  </tr>
+  <tr>
+    <td width="56%"><img src="docs/step-5-your-brand.jpg" alt="A title card and caption in a brand's own colours and type"></td>
+    <td><b>Cards and captions come out in your brand.</b> Title card, end card and captions use your colours, your typeface and your tone of voice.</td>
+  </tr>
+  <tr>
+    <td width="56%"><img src="docs/step-6-on-the-pr.jpg" alt="The video sits at the top of the pull request description"></td>
+    <td><b>The video lands at the top of the PR.</b> Reviewers see the change before they read a line.</td>
+  </tr>
+  <tr>
+    <td width="56%"><img src="docs/every-pr.jpg" alt="A grid of pull requests, each with a video"></td>
+    <td><b>And it keeps going.</b> Every new PR gets its film. When a PR changes after review, the video is refreshed. PRs with nothing to see (docs, tooling) are skipped.</td>
+  </tr>
+</table>
 
 Before a video is attached, Claude checks it: a frame from every scene, the right screen, captions that don't cover
 the subject, no loading or error frames, no real data.
