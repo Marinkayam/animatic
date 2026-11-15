@@ -1,8 +1,9 @@
 <h1 align="center">animatic</h1>
 
 <p align="center">
-  <b>A demo video for every pull request, made by Claude Code, in your design system.</b><br>
-  You set it up once. After that, every PR that changes the UI explains itself.
+  <b>For designers who ship pull requests.</b><br>
+  Claude Code turns every PR you open into a short demo video in your design system,<br>
+  so reviewers see what you changed, not just the code. You set it up once; after that it runs by itself.
 </p>
 
 <p align="center">
@@ -18,6 +19,14 @@
 </p>
 
 ---
+
+## Who it's for
+
+**Designers who build.** If you design in code and open your own pull requests (with Claude Code, or by hand), this
+is for you: your work gets reviewed as a design, not as a diff. You don't need to be a developer to set it up.
+
+It also helps the people around you: **design leads** who review UI work, **developers** who want reviewers to see
+a change without running the branch, and **PMs** who want to know what is about to ship.
 
 ## The problem
 
