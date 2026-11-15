@@ -9,7 +9,8 @@ Goal: a 30–75 second MP4 that shows a reviewer **what changed for the user**, 
 Structure: a title card, 3–6 recorded scenes with short captions, an end card. Then it's attached to the PR.
 
 Args (all optional): a PR number, several PR numbers, or a branch. With no args, compare the current branch with the
-default branch. Talk to the user in their language; video captions are in English unless they ask otherwise.
+default branch. Talk to the user in their language. Captions follow the brand profile's `captions` (language, voice,
+glossary); English by default.
 
 ## Paths and tools
 - `SKILL_DIR` = `~/.claude/skills/animatic/`. Playwright is installed **here**, never in the user's repo.
@@ -19,27 +20,55 @@ default branch. Talk to the user in their language; video captions are in Englis
   cards and the final video go there. **Never commit anything as part of this skill.**
 - Host and org: read them from `git remote get-url origin`.
 
-## Auto mode (only if the user turned it on during setup)
-Hooks run `scripts/auto-hook.mjs` right after `gh pr create`, and at session start for the user's open PRs (opened
-since auto mode was turned on) that have no `<!-- animatic:start -->` block yet. When that hook message appears:
-- Run this whole skill without asking. Skip the storyboard approval (still write `storyboard.md`) and skip
-  "ask before attaching": attach directly, then report the PR link in one line.
-- Still do every check in step 7. If one fails and can't be fixed, don't attach; say what blocked it.
-- No user-visible change (docs, tooling, types, CI only): no video. Add `<repo>#<n>` to `~/.animatic/skip.txt`.
+## 0. Load the brand profile (every run)
+The look and voice of the video come from this repo's brand profile:
+`node -e "import('$HOME/.claude/skills/animatic/tools/brand.mjs').then(m=>console.log(m.brandPath()))"`.
+- Found → read it. `cards.mjs` and `rec-lib.mjs` apply it automatically (colours, font, radius, highlight colour,
+  hidden overlays). Use its `captions` for wording and its `record.where` / `record.never` for where to record.
+- Not found (a new repo) → before anything else, do "Step 3: Adapt to their design system" from the kit's `SETUP.md`
+  (it's in `~/.claude/animatic-kit/SETUP.md`, or ask where the kit is) and show the preview for approval.
+  When a hook started this run, don't interrupt: use `brands/default.json` if it exists, otherwise neutral
+  defaults, make the video, and offer once, in one line, to adapt to this repo's design system.
+
+## It runs by itself (the default)
+The user set this up once and should never have to remember it. Hooks run `scripts/auto-hook.mjs`: right after
+`gh pr create`, and at session start for their open PRs that have no `<!-- animatic:start -->` block yet or whose
+code changed since the video was made. When that hook message appears, do the work **in the same turn**, after
+finishing what they asked for:
+- `~/.animatic/settings.json` `"review"` decides how much they see first:
+  `"none"` (default): no storyboard approval, attach it yourself, report the PR link in one line ·
+  `"video"`: show the video, attach on their yes · `"storyboard"`: show the storyboard first too.
+- Always write `storyboard.md` and do every check in step 7. A check that fails and can't be fixed → don't attach;
+  say in one line what blocked it.
+- No user-visible change (docs, tooling, types, CI only) → no video; add `<repo>#<n>` to `~/.animatic/skip.txt`.
+- A refresh (the PR changed): rerun `.animatic/<slug>/record.mjs`, re-record only the scenes the new commits touch,
+  recompose, and run the uploader again (it replaces the video in place).
+- The only time to stop for the user: the GitHub upload session expired (they sign in again).
+
+Things they may say, and what to do (no menus, just do it and confirm in one line):
+| They say | Do |
+|---|---|
+| "pause animatic" / "turn it back on" | set `"auto"` to `false` / `true` in `~/.animatic/settings.json` |
+| "show me videos before attaching" / "just attach them" | set `"review"` to `"video"` / `"none"` |
+| "skip this PR" | add `<repo>#<n>` to `~/.animatic/skip.txt` |
+| "make the captions bolder", "use our dark theme", "we changed our font" | edit this repo's brand profile, re-render the preview, show it |
+| "redo the video for 482" | run the skill for that PR |
 
 ## 1. Scope the change
 - PR: `gh pr view <n> --json title,body,headRefName,files` and `gh pr diff <n>`. Otherwise `git diff <default>...HEAD`.
 - List only **user-visible** changes: screens, flows, states (empty, loading, error, success), copy, interactions.
   Map each changed component to its route by reading the app's router. Ignore refactors with no visible effect.
 
-## 2. Storyboard (show it before recording, except in Auto mode)
+## 2. Storyboard
 3–6 scenes, one idea per scene, 5–12 seconds each. Write `storyboard.md`:
 
 | # | Caption (≤ 10 words, the user benefit) | App + route | Actions | Highlight |
 
-Plus a title (the PR in plain language) and a one-line subtitle. Show it and wait for a go-ahead.
+Plus a title (the PR in plain language) and a one-line subtitle. Show it and wait only when `review` is
+`"storyboard"`, or when the user ran the skill by hand and asked to see it.
 
 ## 3. Where to record (safety first)
+- Start from the brand profile's `record.where`; never record a host in `record.never`.
 - **Only demo, mock-data, Storybook or local environments.** Never record staging or production with real customer
   data, and never put credentials in scripts. If the only way to see the screen is behind a real sign-in, record the
   component's Storybook/catalog page instead and say so in the storyboard.
@@ -74,17 +103,16 @@ Show the states a reviewer would otherwise miss (validation, empty, toasts, hove
 off camera before `ready`. If a scene needs data the demo lacks, add it to the demo's mock data; don't fake the DOM.
 
 ## 5. Cards and captions in the design system's look
-Find the project's real tokens first (CSS variables such as `--background`, `--foreground`, `--border`,
-`--muted-foreground`, `--primary`, and the font files). Write `.animatic/<slug>/cards.json`:
+The look comes from the brand profile (step 0). Write only the content in `.animatic/<slug>/cards.json`:
 ```json
 { "pr": 123, "date": "Jan 5, 2027", "kicker": "Billing", "title": "…", "subtitle": "…",
   "end": { "bullets": ["…", "…"], "branch": "feat/…" },
-  "captions": { "01-overview": "…" }, "captionPos": { "01-overview": "right" },
-  "theme": { "bg": "#…", "fg": "#…", "muted": "#…", "border": "#…", "card": "#fff", "accent": "#…",
-             "fontFamily": "…", "fontFiles": { "400": "/abs/…-Regular.woff2", "500": "…", "600": "…" } } }
+  "captions": { "01-overview": "…" }, "captionPos": { "01-overview": "right" } }
 ```
-Then `node SKILL_DIR/tools/cards.mjs .animatic/<slug>`. Captions sit bottom-left by default; use `"right"` when the
-subject of that scene (e.g. a table footer) is bottom-left.
+Then `node SKILL_DIR/tools/cards.mjs .animatic/<slug>`. Write captions in the profile's voice and glossary.
+Captions sit bottom-left by default; use `"right"`, `"top-left"` or `"top-right"` when the subject of that scene
+(a table footer, a toast) is where the caption would go. A `"theme"` block in `cards.json` overrides the profile for
+one video only (same keys as `cards.mjs` documents).
 
 ## 6. Compose
 `bash SKILL_DIR/tools/compose.sh .animatic/<slug> [crf]` → title 2.5 s + each scene (trimmed to `ready`, caption
@@ -98,7 +126,8 @@ faded in) + end 3.5 s → `animatic.mp4`. Optional Slack GIF:
   no dev toolbars, no real data. Fix and re-render only the affected scene.
 
 ## 8. Attach to the PR
-Show the video first and ask before attaching (except in Auto mode).
+Follow `review` in `~/.animatic/settings.json`: `"none"` → attach and report; otherwise show the video and ask.
+When the user runs the skill by hand with no settings file, show the video and ask.
 ```bash
 node ~/.claude/skills/animatic/scripts/upload.mjs .animatic/<slug>/animatic.mp4 --pr <n> --repo <owner>/<repo> [--org <org>] [--host <ghe-host>]
 ```

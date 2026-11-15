@@ -1,0 +1,23 @@
+{
+ "pr": 42,
+ "date": "Example",
+ "kicker": "Orbit · Role match",
+ "title": "Role matches you can filter, compare and browse",
+ "subtitle": "Filters update matches instantly, each role shows why it fits, and market insights open in place.",
+ "end": {
+  "bullets": [
+   "Removable filter chips that update matches live",
+   "Match ring with the reasons behind every score",
+   "Pager to browse all matches in place",
+   "Insights panel: hiring activity, pulse, salary trends"
+  ],
+  "branch": "feat/role-match-actions"
+ },
+ "captions": {
+  "01-overview": "The market at a glance, right on Overview",
+  "02-filters": "Remove a filter and matches update instantly",
+  "03-match": "Pick a role to see why it's a match",
+  "04-browse": "Browse every match without leaving the page",
+  "05-insights": "Market insights open right where you are"
+ }
+}

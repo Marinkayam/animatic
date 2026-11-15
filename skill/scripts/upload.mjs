@@ -116,11 +116,29 @@ function writeToPr({ repo, pr }, md, asComment) {
   fs.rmSync(tmp, { force: true });
 }
 
+// Remember which commit the video shows, so the SessionStart hook can tell when a PR has moved on.
+function rememberVideo({ repo, pr }) {
+  try {
+    const sha = gh('pr', 'view', pr, '--repo', repo, '--json', 'headRefOid', '-q', '.headRefOid');
+    const dir = path.join(os.homedir(), '.animatic'), file = path.join(dir, 'state.json');
+    fs.mkdirSync(dir, { recursive: true });
+    let state = {}; try { state = JSON.parse(fs.readFileSync(file, 'utf8')); } catch {}
+    state[`${repo}#${pr}`] = { sha, at: new Date().toISOString() };
+    fs.writeFileSync(file, JSON.stringify(state, null, 1));
+  } catch { /* the video is attached either way */ }
+}
+
 // ---------- browser ----------
+// The skill's own Playwright first (its browser matches the saved sign-in profile), then wherever else it is.
 async function loadPlaywright() {
-  try { return await import('playwright'); } catch {}
-  const req = createRequire(path.join(process.cwd(), 'package.json'));
-  return import(pathToFileURL(req.resolve('playwright')).href);
+  const here = path.dirname(new URL(import.meta.url).pathname);
+  const roots = [path.join(here, '..'), path.join(os.homedir(), '.claude', 'skills', 'animatic'), process.cwd()];
+  for (const root of roots) {
+    if (!fs.existsSync(path.join(root, 'node_modules', 'playwright'))) continue;   // only a Playwright installed right there
+    try { const m = await import(pathToFileURL(createRequire(path.join(root, 'package.json')).resolve('playwright')).href); return m.chromium ? m : m.default; } catch {}
+  }
+  try { const m = await import('playwright'); return m.chromium ? m : m.default; }
+  catch { throw new Error('Playwright is not installed. Run: cd ~/.claude/skills/animatic && npm i playwright && npx playwright install chromium'); }
 }
 
 async function signedInUser(page) {
@@ -258,6 +276,7 @@ async function main() {
   const md = animaticBlock(url, o.title);
   if (o.dryRun) { console.log(`\n${md}\n`); return; }
   writeToPr(target, md, o.comment);
+  rememberVideo(target);
   console.log(`Done: video ${o.comment ? 'posted as a comment on' : 'added to the description of'} https://${o.host}/${target.repo}/pull/${target.pr}`);
 }
 

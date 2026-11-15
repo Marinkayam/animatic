@@ -3,12 +3,15 @@
 import { createRequire } from 'node:module'; import os from 'node:os'; import fs from 'node:fs'; import path from 'node:path';
 export const SKILL_DIR = path.join(os.homedir(), '.claude', 'skills', 'animatic');
 export const { chromium } = createRequire(path.join(SKILL_DIR, 'package.json'))('playwright');
+import { loadBrand, hexToRgb } from './brand.mjs';
+export const brand = loadBrand();
 export const W = 1440, H = 900;
-// Highlight colour as "r,g,b". Set ANIMATIC_ACCENT_RGB to your design system's primary colour.
-const ACCENT = process.env.ANIMATIC_ACCENT_RGB ?? '99,102,241';
-// Extra CSS selectors to hide while recording (dev toolbars etc.), comma separated.
+// Highlight colour "r,g,b": ANIMATIC_ACCENT_RGB, else the brand's accent, else indigo.
+const ACCENT = process.env.ANIMATIC_ACCENT_RGB ?? hexToRgb(brand.colors?.accent) ?? '99,102,241';
+// CSS selectors hidden while recording: common dev overlays + the brand's list + ANIMATIC_HIDE (comma separated).
 const HIDE = ['.TanStackRouterDevtools', '#react-query-devtools', '.tsqd-parent-container', 'vercel-live-feedback',
-  '[data-nextjs-toast]', 'nextjs-portal', ...(process.env.ANIMATIC_HIDE ?? '').split(',').filter(Boolean)].join(',');
+  '[data-nextjs-toast]', 'nextjs-portal', ...(brand.record?.hide ?? []),
+  ...(process.env.ANIMATIC_HIDE ?? '').split(',').filter(Boolean)].join(',');
 
 const init = hide => {
   const css = document.createElement('style');

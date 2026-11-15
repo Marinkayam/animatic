@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit · Role match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-top: #eeeeec; --bg-bottom: #dcdcda; --surface: rgba(255,255,255,.55); --surface-solid: #ffffff;
+    --fg: #121212; --muted: #7c7c78; --line: rgba(18,18,18,.08); --pill: rgba(18,18,18,.06);
+    --accent: #ec4a2c; --accent-soft: #f6b3a3;
+    --font: "Urbanist", -apple-system, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { font-family: var(--font); color: var(--fg); background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom)); overflow: hidden; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  .app { position: relative; height: 900px; padding: 32px 48px 0; }
+
+  /* top bar */
+  .top { display: flex; align-items: center; }
+  .brand { display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 30px; background: var(--pill); }
+  .mark { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; }
+  .mark i { width: 18px; height: 18px; border: 4px solid #fff; border-radius: 50%; border-right-color: transparent; transform: rotate(45deg); }
+  .me { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg,#c9b8a6,#8d7b6a); display: grid; place-items: center; color: #fff; font-weight: 600; font-size: 14px; }
+  nav { margin: 0 auto; display: flex; gap: 6px; }
+  nav button { height: 48px; padding: 0 24px; border-radius: 24px; font-size: 16px; font-weight: 500; transition: background .2s; }
+  nav button[aria-current="page"] { background: rgba(18,18,18,.08); }
+  nav button:hover { background: rgba(18,18,18,.05); }
+  .seg { display: flex; padding: 4px; border-radius: 28px; background: var(--pill); }
+  .seg button { height: 44px; padding: 0 22px; border-radius: 22px; font-size: 16px; font-weight: 500; }
+  .seg button[aria-pressed="true"] { background: var(--surface-solid); box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+
+  /* left rail */
+  .rail { position: absolute; left: 48px; top: 140px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+  .rail span { position: relative; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; }
+  .rail span:first-child { background: rgba(18,18,18,.07); }
+  .rail svg { width: 18px; height: 18px; stroke: var(--fg); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .rail .dot::after { content: ""; position: absolute; top: 10px; right: 10px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* hero */
+  .hero { position: absolute; left: 136px; top: 136px; width: 420px; }
+  h1 { font-size: 64px; line-height: 1.02; font-weight: 300; letter-spacing: -.01em; text-transform: uppercase; }
+  h1 .tagpill { display: inline-flex; vertical-align: middle; margin-left: 12px; height: 46px; padding: 0 22px; align-items: center; border: 1.5px solid rgba(18,18,18,.18); border-radius: 23px; font-size: 16px; font-weight: 500; text-transform: none; letter-spacing: 0; transform: translateY(-8px); }
+  .hero p { margin-top: 24px; max-width: 340px; color: var(--muted); font-size: 17px; line-height: 1.5; }
+  .stack { margin-top: 32px; display: inline-flex; align-items: center; padding: 4px; border-radius: 30px; background: var(--pill); }
+  .stack b { width: 48px; height: 48px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 15px; font-weight: 600; margin-right: -8px; box-shadow: 0 0 0 3px #e6e6e4; }
+  .stack em { width: 48px; height: 48px; display: grid; place-items: center; font-style: normal; font-size: 20px; margin-left: 8px; }
+
+  /* chart */
+  .chart { position: absolute; left: 600px; top: 150px; width: 520px; height: 330px; }
+  .chart svg { overflow: visible; }
+  .arc { transform-box: fill-box; transform-origin: 50% 100%; animation: rise 1.1s cubic-bezier(.2,.8,.2,1) both; }
+  .arc.a2 { animation-delay: .15s; } .arc.a3 { animation-delay: .3s; }
+  @keyframes rise { from { transform: scale(.2); opacity: 0; } }
+  .lbl { font-size: 20px; font-weight: 500; fill: var(--fg); animation: fade .6s ease both; animation-delay: .9s; }
+  .axis { font-size: 14px; fill: var(--muted); }
+  .cap { font-size: 15px; fill: var(--fg); font-weight: 500; }
+  @keyframes fade { from { opacity: 0; } }
+
+  /* insights accordion */
+  .insights { position: absolute; right: 48px; top: 150px; width: 236px; display: flex; flex-direction: column; gap: 8px; }
+  .acc { border-radius: 18px; background: var(--surface); backdrop-filter: blur(8px); overflow: hidden; }
+  .acc > button { width: 100%; height: 52px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; font-size: 16px; font-weight: 500; }
+  .acc > button i { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--fg); transition: transform .25s; }
+  .acc[data-open="true"] > button i { transform: rotate(180deg); }
+  .acc .panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+  .acc[data-open="true"] .panel { grid-template-rows: 1fr; }
+  .acc .panel > div { overflow: hidden; }
+  .acc ul { list-style: none; padding: 0 18px 16px; display: flex; flex-direction: column; gap: 9px; font-size: 13px; color: var(--muted); }
+  .acc ul b { color: var(--fg); font-weight: 600; }
+  .bar { height: 6px; border-radius: 3px; background: rgba(18,18,18,.08); margin-top: 4px; overflow: hidden; }
+  .bar span { display: block; height: 100%; border-radius: 3px; background: var(--accent); }
+
+  /* filters */
+  .filters { position: absolute; left: 48px; right: 48px; top: 496px; display: flex; align-items: center; gap: 8px; }
+  .funnel { width: 44px; height: 44px; border-radius: 50%; background: var(--pill); display: grid; place-items: center; margin-right: 8px; }
+  .funnel svg { width: 16px; height: 16px; fill: var(--fg); }
+  .chip { position: relative; height: 40px; padding: 0 22px; display: flex; align-items: center; font-size: 16px; font-weight: 500; border-radius: 20px; transition: opacity .25s, transform .25s; }
+  .chip .x { position: absolute; top: -4px; right: -4px; width: 18px; height: 18px; border-radius: 50%; background: rgba(18,18,18,.1); display: grid; place-items: center; font-size: 11px; color: var(--muted); }
+  .chip .x:hover { background: var(--accent); color: #fff; }
+  .chip.out { opacity: 0; transform: scale(.85); }
+  .pager { margin-left: auto; display: flex; align-items: center; gap: 22px; font-size: 22px; font-weight: 500; }
+  .pager small { font-size: 14px; color: var(--muted); font-weight: 500; }
+  .pager button { width: 32px; height: 32px; border-radius: 50%; font-size: 18px; display: grid; place-items: center; }
+  .pager button:hover { background: var(--pill); }
+
+  /* match cards */
+  .rail-cards { position: absolute; left: 0; right: 0; top: 556px; overflow: hidden; padding: 4px 0 40px; }
+  .track { display: flex; gap: 14px; padding-left: 64px; transition: transform .55s cubic-bezier(.2,.8,.2,1); }
+  .card { flex: none; width: 318px; height: 226px; border-radius: 22px; background: var(--surface); padding: 22px 24px; cursor: pointer;
+          transition: background .3s, box-shadow .3s, opacity .3s; position: relative; }
+  .card:hover { background: rgba(255,255,255,.75); }
+  .card[aria-pressed="true"] { background: var(--surface-solid); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
+  .card.fade { opacity: 0; }
+  .card h3 { font-size: 22px; font-weight: 500; }
+  .card .role { margin-top: 2px; font-size: 13px; color: var(--muted); }
+  .card .go { position: absolute; top: 22px; right: 24px; font-size: 18px; color: var(--muted); }
+  .card .content { display: flex; align-items: center; gap: 22px; margin-top: 10px; }
+  .ring { position: relative; width: 116px; height: 116px; flex: none; }
+  .ring svg { transform: rotate(-90deg); }
+  .ring .track-c { fill: none; stroke: #fff; stroke-width: 6; }
+  .ring .ticks { fill: none; stroke: rgba(18,18,18,.18); stroke-width: 6; stroke-dasharray: 1 3; }
+  .ring .val { fill: none; stroke: transparent; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1), stroke .3s; }
+  .card[aria-pressed="true"] .val { stroke: var(--accent); }
+  .ring .num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring .num b { font-size: 30px; font-weight: 400; } .ring .num b small { font-size: 16px; }
+  .ring .num span { font-size: 11px; color: var(--muted); }
+  .card ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 9px; font-size: 13px; }
+  .card li::before { content: "✓"; margin-right: 8px; font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="mark"><i></i></span><span class="me" aria-hidden="true">RL</span></div>
+    <nav aria-label="Main">
+      <button aria-current="page">Overview</button><button>Open roles</button><button>Team insights</button><button>Community</button>
+    </nav>
+    <div class="seg" role="group" aria-label="Mode"><button aria-pressed="false">Hire</button><button aria-pressed="true">Find a role</button></div>
+  </header>
+
+  <aside class="rail" aria-hidden="true">
+    <span><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4-4"/></svg></span>
+    <span class="dot"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+    <span><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2"/></svg></span>
+    <span class="dot"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+    <span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2"/><path d="M14 10h4M14 14h4"/></svg></span>
+  </aside>
+
+  <section class="hero">
+    <h1>Roles that<br>fit you <span class="tagpill">AI-matched</span></h1>
+    <p>We read what you're looking for and lined up the roles that fit your skills, pay and pace.</p>
+    <div class="stack" aria-label="Companies hiring"><b>N</b><b>L</b><b>F</b><em>⋮</em></div>
+  </section>
+
+  <figure class="chart" aria-label="Roles posted on the platform">
+    <svg width="520" height="330" viewBox="0 0 520 330">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7d5cc"/><stop offset=".7" stop-color="#ef7a5f"/><stop offset="1" stop-color="#ec4a2c"/></linearGradient>
+        <pattern id="h" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#e4e4e2"/><rect width="3" height="8" fill="#cfcfcc"/></pattern>
+      </defs>
+      <path class="arc a3" d="M60 300 A 210 210 0 0 1 480 300 Z" fill="url(#g)"/>
+      <path class="arc a2" d="M60 300 A 145 145 0 0 1 350 300 Z" fill="#ededeb"/>
+      <path class="arc a1" d="M60 300 A 75 75 0 0 1 210 300 Z" fill="url(#h)"/>
+      <g class="lbl"><circle cx="270" cy="90" r="3.5" fill="#ec4a2c"/><text x="270" y="76" text-anchor="middle">120k+</text>
+        <circle cx="205" cy="155" r="3.5" fill="#ec4a2c"/><text x="205" y="141" text-anchor="middle">45k+</text>
+        <circle cx="135" cy="225" r="3.5" fill="#ec4a2c"/><text x="135" y="211" text-anchor="middle">8k+</text></g>
+      <line x1="60" y1="300" x2="480" y2="300" stroke="#cfcfcc" stroke-dasharray="2 20" stroke-width="5" stroke-linecap="round"/>
+      <text class="axis" x="48" y="328">2024</text><text class="axis" x="470" y="328">2025</text>
+      <text class="cap" x="270" y="328" text-anchor="middle">Roles posted on the platform</text>
+    </svg>
+  </figure>
+
+  <aside class="insights" aria-label="Market insights">
+    <div class="acc" data-open="true"><button aria-expanded="true">Hiring activity <i></i></button>
+      <div class="panel"><div><ul><li>Teams hiring <b>(1 842)</b></li><li>Open roles <b>(412 506)</b></li><li>Offers made <b>(88 120)</b></li></ul></div></div></div>
+    <div class="acc" data-open="false"><button aria-expanded="false">Pulse index <i></i></button>
+      <div class="panel"><div><ul><li>Demand for design roles <b>+18%</b></li><li>Time to offer <b>21 days</b></li></ul></div></div></div>
+    <div class="acc" data-open="false"><button aria-expanded="false">Salary trends <i></i></button>
+      <div class="panel"><div><ul>
+        <li>Product design <b>$148k</b><div class="bar"><span style="width:78%"></span></div></li>
+        <li>Research <b>$132k</b><div class="bar"><span style="width:64%"></span></div></li>
+        <li>Design systems <b>$156k</b><div class="bar"><span style="width:84%"></span></div></li></ul></div></div></div>
+  </aside>
+
+  <div class="filters">
+    <span class="funnel" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg></span>
+    <div id="chips" style="display:flex;gap:8px" role="group" aria-label="Active filters"></div>
+    <div class="pager"><button id="prev" aria-label="Previous matches">←</button><span><span id="page">01</span><small> / <span id="total">128</span></small></span><button id="next" aria-label="Next matches">→</button></div>
+  </div>
+
+  <section class="rail-cards" aria-label="Matches"><div class="track" id="track"></div></section>
+</div>
+
+<script>
+const ROLES = [
+  { co: 'Northwind', role: 'Product Designer', ago: '1 h ago', m: 94, why: ['Skills', 'Salary', 'Remote'], senior: false },
+  { co: 'Lumen Labs', role: 'Design Systems Lead', ago: '3 h ago', m: 88, why: ['Experience', 'Team size', 'Salary'], senior: true },
+  { co: 'Fernway', role: 'UX Designer', ago: '6 h ago', m: 76, why: ['Skills', 'Growth', 'Benefits'], senior: false },
+  { co: 'Kitebase', role: 'Senior Product Designer', ago: '9 h ago', m: 83, why: ['Experience', 'Salary', 'Hybrid'], senior: true },
+  { co: 'Halcyon', role: 'UX Researcher', ago: '12 h ago', m: 69, why: ['Methods', 'Remote', 'Benefits'], senior: false },
+  { co: 'Pebble', role: 'Product Designer', ago: '1 d ago', m: 81, why: ['Skills', 'Mission', 'Salary'], senior: false },
+  { co: 'Quarry', role: 'Lead Designer', ago: '1 d ago', m: 72, why: ['Leadership', 'Salary', 'Hybrid'], senior: true },
+  { co: 'Tessel', role: 'Interaction Designer', ago: '2 d ago', m: 86, why: ['Prototyping', 'Skills', 'Remote'], senior: false },
+];
+let chips = ['Hybrid', 'Mid–Senior', '$120k–$180k', 'Full time'], page = 0, selected = 0;
+const $ = id => document.getElementById(id);
+const R = 52, C = 2 * Math.PI * R;
+const label = m => m >= 80 ? 'Strong match' : m >= 70 ? 'Good match' : 'Fair match';
+
+function shown() { return chips.includes('Mid–Senior') ? ROLES : ROLES.filter(r => !r.senior).concat(ROLES.filter(r => r.senior)); }
+function renderChips() {
+  $('chips').innerHTML = chips.map(c => `<span class="chip">${c}<button class="x" aria-label="Remove ${c}">×</button></span>`).join('');
+}
+function renderCards() {
+  $('track').innerHTML = shown().map((r, i) => `
+    <article class="card" aria-label="${r.co}" aria-pressed="${i === selected}" data-i="${i}">
+      <h3>${r.co}</h3><p class="role">${r.role} · ${r.ago}</p><span class="go">↗</span>
+      <div class="content">
+        <div class="ring"><svg width="116" height="116" viewBox="0 0 116 116">
+          <circle class="ticks" cx="58" cy="58" r="${R}"/>
+          <circle class="val" cx="58" cy="58" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${i === selected ? C * (1 - r.m / 100) : C}"/></svg>
+          <div class="num"><b>${r.m}<small>%</small></b><span>${label(r.m)}</span></div></div>
+        <ul>${r.why.map(w => `<li>${w}</li>`).join('')}</ul>
+      </div></article>`).join('');
+}
+function select(i) {
+  selected = i;
+  [...$('track').children].forEach((c, j) => {
+    c.setAttribute('aria-pressed', j === i);
+    const r = shown()[j], v = c.querySelector('.val');
+    v.style.strokeDashoffset = j === i ? C * (1 - r.m / 100) : C;
+  });
+}
+function go(d) {
+  page = Math.max(0, Math.min(3, page + d));
+  $('track').style.transform = `translateX(${-page * 332}px)`;
+  $('page').textContent = String(page + 1).padStart(2, '0');
+}
+$('chips').addEventListener('click', e => {
+  const x = e.target.closest('.x'); if (!x) return;
+  const chip = x.parentElement, name = chip.firstChild.textContent;
+  chip.classList.add('out');
+  setTimeout(() => {
+    chips = chips.filter(c => c !== name); renderChips();
+    $('total').textContent = { 'Hybrid': 211, 'Mid–Senior': 176, '$120k–$180k': 240, 'Full time': 198 }[name] ?? 150;
+    [...$('track').children].forEach(c => c.classList.add('fade'));
+    setTimeout(() => { selected = 0; renderCards(); requestAnimationFrame(() => select(0)); }, 280);
+  }, 250);
+});
+$('track').addEventListener('click', e => { const c = e.target.closest('.card'); if (c) select(+c.dataset.i); });
+$('next').addEventListener('click', () => go(1));
+$('prev').addEventListener('click', () => go(-1));
+document.querySelectorAll('.acc > button').forEach(b => b.addEventListener('click', () => {
+  const acc = b.parentElement, open = acc.dataset.open !== 'true';
+  document.querySelectorAll('.acc').forEach(a => { a.dataset.open = 'false'; a.firstElementChild.setAttribute('aria-expanded', 'false'); });
+  acc.dataset.open = String(open); b.setAttribute('aria-expanded', String(open));
+}));
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b))));
+renderChips(); renderCards();
+// first ring draws in after load
+const v0 = () => document.querySelector('.card .val'); v0().style.strokeDashoffset = C; requestAnimationFrame(() => setTimeout(() => select(0), 600));
+</script>
+</body>
+</html>

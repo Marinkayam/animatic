@@ -1,0 +1,9 @@
+{
+  "name": "Orbit (example)",
+  "source": "example/app/index.html :root tokens and the Urbanist web font",
+  "colors": { "background": "#ebebe9", "foreground": "#121212", "muted": "#7c7c78", "border": "#e2e2df", "card": "#ffffff", "accent": "#ec4a2c" },
+  "font": { "family": "Urbanist", "import": "https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap", "titleWeight": 500, "captionWeight": 500 },
+  "radius": 18,
+  "captions": { "language": "en", "voice": "Short, sentence case, the user's benefit. Max 10 words." },
+  "record": { "where": [{ "name": "Orbit example", "url": "example/app/index.html", "note": "static file, fake data" }], "hide": [], "never": [] }
+}
