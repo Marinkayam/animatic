@@ -43,8 +43,10 @@ finishing what they asked for:
 - Always write `storyboard.md` and do every check in step 7. A check that fails and can't be fixed → don't attach;
   say in one line what blocked it.
 - No user-visible change (docs, tooling, types, CI only) → no video; add `<repo>#<n>` to `~/.animatic/skip.txt`.
-- A refresh (the PR changed): rerun `.animatic/<slug>/record.mjs`, re-record only the scenes the new commits touch,
-  recompose, and run the uploader again (it replaces the video in place).
+- A refresh (the PR got new commits): first `git diff <the commit the video shows>..<PR head> -- <the PR's own files>`.
+  Nothing user-visible changed (a merge from the base, a typo in a comment) → don't re-record; run
+  `upload.mjs --mark --pr <n> --repo <repo>` and say nothing. Otherwise rerun `.animatic/<slug>/record.mjs` for the
+  scenes the new commits touch, recompose, and run the uploader again (it replaces the video in place).
 - The only time to stop for the user: the GitHub upload session expired (they sign in again).
 
 Things they may say, and what to do (no menus, just do it and confirm in one line):

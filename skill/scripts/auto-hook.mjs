@@ -27,7 +27,9 @@ const HOW = {
 const instruction = (make, refresh) => [
   `ANIMATIC (the user set this up to run by itself; they never need to ask):`,
   ...(make.length ? [`These PRs have no demo video yet:`, ...make.map(p => `- ${p.repo}#${p.n}${p.title ? ` "${p.title}"` : ''}`)] : []),
-  ...(refresh.length ? [`These PRs changed since their video was made; refresh the video (rerun .animatic/<slug>/record.mjs, re-record only the scenes the new commits touch):`, ...refresh.map(p => `- ${p.repo}#${p.n}${p.title ? ` "${p.title}"` : ''}`)] : []),
+  ...(refresh.length ? [`These PRs got new commits since their video was made (the video shows the commit in brackets):`,
+    ...refresh.map(p => `- ${p.repo}#${p.n} [${p.old}]${p.title ? ` "${p.title}"` : ''}`),
+    `For each: git diff <that commit>..<the PR head> -- <the PR's own files>. Nothing user-visible changed (e.g. only a merge from the base)? Don't re-record: run upload.mjs --mark --pr <n> --repo <repo> and say nothing. Otherwise rerun .animatic/<slug>/record.mjs for the scenes the new commits touch and upload again.`] : []),
   `Run the animatic skill for each one now (~/.claude/skills/animatic/SKILL.md), in this repo's brand profile.`,
   HOW[SET?.review] ?? HOW.none,
   `Finish what the user asked for first if you are mid-task, then do this before ending the turn.`,
@@ -54,7 +56,7 @@ function start() {
     if (p.isDraft || s.has(id)) continue;
     const has = (p.body ?? '').includes('<!-- animatic:start -->');
     if (!has) { if (p.createdAt.slice(0, 10) >= (SET.since ?? '0000')) make.push(item); }
-    else if (STATE[id]?.sha && p.headRefOid && STATE[id].sha !== p.headRefOid) refresh.push(item);
+    else if (STATE[id]?.sha && p.headRefOid && STATE[id].sha !== p.headRefOid) refresh.push({ ...item, old: STATE[id].sha.slice(0, 10) });
   }
   if (make.length || refresh.length) emit('SessionStart', instruction(make, refresh));
 }

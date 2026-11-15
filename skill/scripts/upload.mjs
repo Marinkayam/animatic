@@ -15,6 +15,7 @@
 //   node upload.mjs video.mp4 --pr 482            # specific PR
 //   node upload.mjs video.mp4 --pr 482 --comment  # post as a comment instead
 //   node upload.mjs video.mp4 --pr 482 --dry-run  # upload only, print markdown
+//   node upload.mjs --mark --pr 482               # no upload: note that the video is still right for the PR's latest commit
 //
 // Options: --repo owner/name  --title "How it works"  --headed  --profile <dir>
 //
@@ -42,7 +43,7 @@ const TYPES = { '.mp4': 'video/mp4', '.mov': 'video/quicktime', '.webm': 'video/
 
 // ---------- pure helpers (exported for tests) ----------
 export function parseArgs(argv) {
-  const o = { file: null, pr: null, repo: null, comment: false, login: false, headed: false, dryRun: false,
+  const o = { file: null, pr: null, repo: null, comment: false, login: false, headed: false, dryRun: false, mark: false,
     title: '🎬 How it works', profile: null,
     host: process.env.ANIMATIC_GH_HOST || 'github.com', org: process.env.ANIMATIC_GH_ORG || null,
     loginUrl: process.env.ANIMATIC_GH_LOGIN_URL || null };
@@ -59,6 +60,7 @@ export function parseArgs(argv) {
     else if (a === '--login') o.login = true;
     else if (a === '--headed') o.headed = true;
     else if (a === '--dry-run') o.dryRun = true;
+    else if (a === '--mark') o.mark = true;
     else if (a.startsWith('--')) throw new Error(`Unknown option ${a}`);
     else o.file = a;
   }
@@ -260,6 +262,7 @@ async function uploadViaBrowser(chromium, o, { repo, pr }) {
 async function main() {
   const o = parseArgs(process.argv.slice(2));
   if (o.host !== 'github.com') GH_ENV = { ...process.env, GH_HOST: o.host };
+  if (o.mark) { const t = resolveTarget(o); rememberVideo(t); console.log(`Noted: the video on ${t.repo}#${t.pr} is current.`); return; }
   const { chromium } = await loadPlaywright();
   if (o.login) { await login(chromium, o); if (!o.file) return; }
   if (!o.file) throw new Error('Pass a video file, e.g. node upload.mjs .animatic/my-feature/animatic.mp4');
