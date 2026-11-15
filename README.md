@@ -6,11 +6,11 @@
 </p>
 
 <p align="center">
-  <a href="docs/animatic-film.mp4"><img src="docs/hero.jpg" alt="A pull request with a demo video at the top: A demo video for every PR. It shows what the PR changed." width="100%"></a>
+  <img src="docs/film.gif" alt="The one-minute animatic film: a pull request's diff folds away into a demo video; setup is one sentence; Claude learns your design system; you open a pull request and animatic starts by itself; the video lands on the PR." width="100%">
 </p>
 
 <p align="center">
-  <a href="docs/animatic-film.mp4"><b>▶ Watch the 1-minute film</b></a>
+  <a href="https://github.com/Marinkayam/animatic/raw/main/docs/animatic-film.mp4"><b>⬇ The film with sound (56 s, 9 MB)</b></a>
   &nbsp;·&nbsp; <a href="#get-it">Get it</a>
   &nbsp;·&nbsp; <a href="#how-it-works">How it works</a>
   &nbsp;·&nbsp; <a href="#in-your-design-system">Your design system</a>
@@ -30,7 +30,7 @@ each pull request, and puts a 30–75 second video at the top of it: what change
 PR's real code, with title cards and captions in your own brand.
 
 <p align="center">
-  <img src="docs/teaser.gif" alt="The diff lines of a pull request fold away and a demo video opens in their place" width="82%">
+  <img src="docs/hero.jpg" alt="A pull request with its demo video at the top: a demo video for every PR, it shows what the PR changed" width="82%">
 </p>
 
 ## What you get
