@@ -34,7 +34,12 @@ any time. `default.json` in the same folder is used for repos without their own 
     ],
     "hide": ["#intercom-container", ".dev-toolbar"],
     "never": ["staging.acme.com", "app.acme.com"]
-  }
+  },
+  "notes": [
+    "Talk to me in Spanish; captions stay in English.",
+    "The demo app needs `npm run dev:demo -- --mock`; it has no sign-in.",
+    "Never commit anything; PR titles here start with the ticket id."
+  ]
 }
 ```
 
@@ -48,6 +53,7 @@ any time. `default.json` in the same folder is used for repos without their own 
 | `record.where` | Where it's safe to record | Storybook, a component catalog, a demo/mock app, `.env.example`, README "run locally" |
 | `record.hide` | Selectors hidden while recording | Chat widgets, cookie banners, dev toolbars seen on a test screenshot |
 | `record.never` | Hosts never to record | Production and staging URLs with real customer data |
+| `notes` | Working rules for this repo that Claude follows on every run | What you'd otherwise have to repeat: how to run the demo, language, team conventions |
 
 Only `colors.accent` is really required; everything else falls back to neutral defaults. Values in a video's
 `cards.json` `theme` override the profile for that one video.

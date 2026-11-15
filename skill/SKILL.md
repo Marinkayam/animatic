@@ -25,6 +25,8 @@ The look and voice of the video come from this repo's brand profile:
 `node -e "import('$HOME/.claude/skills/animatic/tools/brand.mjs').then(m=>console.log(m.brandPath()))"`.
 - Found → read it. `cards.mjs` and `rec-lib.mjs` apply it automatically (colours, font, radius, highlight colour,
   hidden overlays). Use its `captions` for wording and its `record.where` / `record.never` for where to record.
+  Its `notes` are this repo's own working rules (how to start the demo apps, what to talk to the user in, what
+  never to touch): follow them like instructions from the user.
 - Not found (a new repo) → before anything else, do "Step 3: Adapt to their design system" from the kit's `SETUP.md`
   (it's in `~/.claude/animatic-kit/SETUP.md`, or ask where the kit is) and show the preview for approval.
   When a hook started this run, don't interrupt: use `brands/default.json` if it exists, otherwise neutral
