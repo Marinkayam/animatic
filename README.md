@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Marinkayam/animatic/raw/main/docs/animatic-film.mp4"><b>⬇ The film with sound (56 s, 9 MB)</b></a>
+  <a href="https://marinkayam.github.io/animatic/"><b>▶ Watch the film with sound (56 s)</b></a>
   &nbsp;·&nbsp; <a href="#get-it">Get it</a>
   &nbsp;·&nbsp; <a href="#how-it-works">How it works</a>
   &nbsp;·&nbsp; <a href="#in-your-design-system">Your design system</a>
@@ -45,6 +45,8 @@ A real video, made with this skill, of a fictional job-matching app ([`example/`
 - **3–6 scenes**, one idea each: the real screen, a visible cursor, the thing that changed highlighted, a short caption.
 - **An end card**: what changed, in bullets.
 - **On the PR**: it plays right in the description, above the text. No link to click, no file to download.
+
+<sub>The example app's visual design is based on a design concept found on Pinterest and is used for demonstration only. Every name, text and number in it is fictional. If it is your design and you would like credit or want it removed, please open an issue.</sub>
 
 ## Get it
 
@@ -217,3 +219,5 @@ bash skill/tools/compose.sh example/out        # -> example/out/animatic.mp4
 
 [MIT](LICENSE). Made by Marina Kaplan, with Claude Code. The film and every image on this page were made in code
 with the skill's own tools.
+
+**About the example.** The example app's visual design is based on a design concept found on Pinterest and is used for demonstration only. Every name, text and number in it is fictional. If it is your design and you would like credit or want it removed, please open an issue.

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>animatic · a demo video for every pull request</title>
+<meta name="description" content="A Claude Code skill that turns every pull request into a short demo video, in your design system. Set it up once; every PR that changes the UI explains itself.">
+<meta property="og:title" content="animatic · a demo video for every pull request">
+<meta property="og:description" content="A Claude Code skill. Set it up once; every PR that changes the UI explains itself, in your design system.">
+<meta property="og:image" content="https://marinkayam.github.io/animatic/hero.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-top: #f0f0ee; --bg-bottom: #dcdcda; --surface: #fbfbfa; --fg: #121212; --muted: #5c5c58; --faint: #8f8f8a;
+    --line: rgba(18,18,18,.09); --accent: #ec4a2c; --radius: 26px;
+    --sans: "Urbanist", system-ui, -apple-system, sans-serif; --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: var(--sans); color: var(--fg); background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom)) fixed; min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.5; }
+  a { color: inherit; }
+  .wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.5rem; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.5rem 0; }
+  .brand { display: flex; align-items: center; gap: .75rem; font-size: 1.5rem; font-weight: 500; letter-spacing: -.02em; text-decoration: none; }
+  .mark { width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--accent); display: grid; place-items: center; box-shadow: 0 .5rem 1.25rem rgba(236,74,44,.35); flex: none; }
+  .mark::after { content: ""; border-left: .7rem solid #fff; border-top: .45rem solid transparent; border-bottom: .45rem solid transparent; margin-left: .18rem; }
+  .pill { display: inline-flex; align-items: center; height: 2.75rem; padding: 0 1.25rem; border-radius: 1.375rem; background: var(--fg); color: #fff; font-weight: 500; text-decoration: none; white-space: nowrap; transition: transform .15s; }
+  .pill:hover { transform: translateY(-1px); }
+  .pill:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .hero { padding: 3rem 0 2rem; text-align: center; }
+  .kicker { font-size: .8125rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin-top: 1rem; font-size: clamp(2.25rem, 6.4vw, 4.75rem); line-height: 1.04; font-weight: 300; letter-spacing: -.015em; text-transform: uppercase; text-wrap: balance; }
+  .lead { margin: 1.25rem auto 0; max-width: 40rem; font-size: clamp(1.0625rem, 2vw, 1.3125rem); color: var(--muted); text-wrap: pretty; }
+  .film { margin: 2.5rem auto 0; border-radius: var(--radius); overflow: hidden; background: #000; border: 1px solid var(--line); box-shadow: 0 2rem 4rem rgba(18,18,18,.16); aspect-ratio: 16 / 9; }
+  .film video { display: block; width: 100%; height: 100%; }
+  .note { margin-top: .875rem; font-size: .9375rem; color: var(--faint); }
+  section { padding: 3.5rem 0 0; }
+  h2 { font-size: clamp(1.5rem, 3.4vw, 2.25rem); font-weight: 300; text-transform: uppercase; letter-spacing: -.01em; text-align: center; text-wrap: balance; }
+  .say { margin: 1.75rem auto 0; max-width: 46rem; display: flex; align-items: center; gap: .75rem; padding: .625rem .625rem .625rem 1.25rem; border-radius: 1.25rem; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 1rem 2rem rgba(18,18,18,.06); }
+  .say code { flex: 1; min-width: 0; font-family: var(--mono); font-size: clamp(.75rem, 1.7vw, .9375rem); overflow-wrap: anywhere; }
+  .say code::before { content: "> "; color: var(--faint); }
+  .say button { flex: none; height: 2.5rem; padding: 0 1.125rem; border: 0; border-radius: 1.25rem; background: var(--accent); color: #fff; font: 600 .9375rem var(--sans); cursor: pointer; }
+  .steps { margin-top: 2rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
+  .card img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-bottom: 1px solid var(--line); }
+  .card div { padding: 1.125rem 1.25rem 1.375rem; }
+  .card b { display: block; font-size: 1.125rem; font-weight: 600; }
+  .card p { margin-top: .375rem; color: var(--muted); font-size: .9688rem; }
+  .wide { margin-top: 2rem; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); box-shadow: 0 1rem 2rem rgba(18,18,18,.08); }
+  .wide img { display: block; width: 100%; }
+  footer { padding: 4rem 0 3rem; text-align: center; color: var(--faint); font-size: .9375rem; }
+  footer .pill { margin-bottom: 1.5rem; }
+  @media (max-width: 52rem) { .steps { grid-template-columns: 1fr; } header .pill { display: none; } .hero { padding-top: 1.5rem; } }
+  @media (prefers-reduced-motion: reduce) { .pill { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="https://github.com/Marinkayam/animatic"><span class="mark" aria-hidden="true"></span>animatic</a>
+    <a class="pill" href="https://github.com/Marinkayam/animatic">Get it on GitHub</a>
+  </header>
+
+  <main>
+    <div class="hero">
+      <p class="kicker">A skill for Claude Code</p>
+      <h1>A demo video for every pull request</h1>
+      <p class="lead">Set it up once. After that, every PR that changes the UI explains itself, with a short video in your own design system at the top of the description.</p>
+      <div class="film">
+        <video controls playsinline preload="metadata" poster="hero.jpg">
+          <source src="animatic-film.mp4" type="video/mp4">
+          Your browser can't play this video. <a href="animatic-film.mp4">Download the film</a>.
+        </video>
+      </div>
+      <p class="note">56 seconds, with sound and captions.</p>
+    </div>
+
+    <section>
+      <h2>Setup is one sentence</h2>
+      <div class="say">
+        <code id="cmd">Set up https://github.com/Marinkayam/animatic for me.</code>
+        <button type="button" id="copy">Copy</button>
+      </div>
+      <p class="note" style="text-align:center">Say it to Claude Code, inside your app's repo.</p>
+      <div class="steps">
+        <article class="card"><img src="step-2-design-system.jpg" alt="Claude reads colours, type and radius into a brand profile and shows a preview card" loading="lazy"><div><b>It learns your design system</b><p>Claude reads your tokens, fonts and tone, then asks once: does this look like you?</p></div></article>
+        <article class="card"><img src="step-3-open-a-pr.jpg" alt="A Create pull request button, and below it: animatic started by itself" loading="lazy"><div><b>Then you do nothing</b><p>Open a pull request and it starts by itself. No command to remember.</p></div></article>
+        <article class="card"><img src="step-6-on-the-pr.jpg" alt="The video sits at the top of the pull request description" loading="lazy"><div><b>The video lands on the PR</b><p>Reviewers see what changed for the user before they read a line.</p></div></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>The same video, in your brand</h2>
+      <div class="wide"><img src="brands.jpg" alt="The same title card and caption rendered in three brands: a warm serif brand, a dark violet brand, and a light uppercase brand" loading="lazy"></div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="pill" href="https://github.com/Marinkayam/animatic#get-it">Read the guide on GitHub</a>
+    <p>Free and open source (MIT). Made by Marina Kaplan, with Claude Code.<br>The film and every image here were made in code with the skill's own tools.</p>
+    <p style="margin-top:.75rem;max-width:44rem;margin-inline:auto">The example app's visual design is based on a design concept found on Pinterest and is used for demonstration only. Every name, text and number in it is fictional. If it is your design and you would like credit or want it removed, please <a href="https://github.com/Marinkayam/animatic/issues">open an issue</a>.</p>
+  </footer>
+</div>
+<script>
+  const b = document.getElementById('copy');
+  b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(document.getElementById('cmd').textContent); b.textContent = 'Copied'; }
+    catch { b.textContent = 'Select and copy'; }
+    setTimeout(() => { b.textContent = 'Copy'; }, 1800);
+  });
+</script>
+</body>
+</html>
